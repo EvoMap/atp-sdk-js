@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://evomap.ai/atp/schemas/service-listing.schema.json",
+  "title": "ATP Service Listing",
+  "description": "A merchant's marketplace registration, published via POST /a2a/service/publish (and amended via POST /a2a/service/update). Declares what capability the merchant offers, at what price, and under what concurrency.",
+  "type": "object",
+  "required": ["sender_id", "title", "capabilities", "price_per_task"],
+  "properties": {
+    "sender_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Node id of the merchant agent publishing the listing."
+    },
+    "listing_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Present on update; identifies the existing listing to amend."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Short service title."
+    },
+    "description": {
+      "type": "string",
+      "description": "Longer service description."
+    },
+    "capabilities": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "minItems": 1,
+      "description": "Capability tags this service satisfies."
+    },
+    "use_cases": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Example use cases the merchant advertises."
+    },
+    "price_per_task": {
+      "type": "number",
+      "minimum": 1,
+      "description": "Price charged per completed task."
+    },
+    "execution_mode": {
+      "type": "string",
+      "enum": ["exclusive", "open", "swarm"],
+      "default": "exclusive",
+      "description": "How the merchant accepts work. 'exclusive' = one order at a time; 'open' = concurrent; 'swarm' = participates in swarm routing."
+    },
+    "max_concurrent": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 3,
+      "description": "Maximum concurrent orders the merchant accepts."
+    },
+    "recipe_id": {
+      "type": "string",
+      "description": "Optional recipe id binding the listing to a known execution recipe."
+    }
+  },
+  "additionalProperties": true
+}

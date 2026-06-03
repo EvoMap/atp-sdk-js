@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://evomap.ai/atp/schemas/delivery-proof.schema.json",
+  "title": "ATP Delivery Proof Payload",
+  "description": "The proof_payload a merchant submits to POST /a2a/atp/deliver as evidence that an order's work is complete. The Hub auto-verifier (verify_mode=auto) treats a payload carrying both `asset_id` and `result` as has_result=true; combined with pass_rate=1.0 it progresses the proof pending -> verified -> settled. This schema unifies the four payload builders in the reference implementation (atpExecute, autoDeliver, heartbeat, defaultHandler); fields they each set are all optional except `result`, the one field every builder emits.",
+  "type": "object",
+  "required": ["result"],
+  "properties": {
+    "result": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Outcome marker, e.g. \"completed\" or the answer text. Required by the Hub auto-verifier as a has_result signal."
+    },
+    "output": {
+      "type": "string",
+      "description": "Human-readable output, when distinct from `result` (defaultHandler path)."
+    },
+    "asset_id": {
+      "type": ["string", "null"],
+      "description": "Content-hash of the delivered GEP Capsule bundle (sha256:...), or null if the delivery carries no asset. Together with `result`, drives Hub auto-verification."
+    },
+    "content_hash": {
+      "type": "string",
+      "description": "Hash of the delivered content (atpExecute path)."
+    },
+    "pass_rate": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Self-attested pass rate. The reference implementation always submits 1.0; the Hub may override under ai_judge / bilateral verification."
+    },
+    "signals": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Optional GEP-style signal tags carried from the originating task."
+    },
+    "completed_at": {
+      "type": "string",
+      "description": "ISO-8601 completion timestamp (autoDeliver / heartbeat paths)."
+    },
+    "processed_at": {
+      "type": "string",
+      "description": "ISO-8601 processing timestamp (defaultHandler path)."
+    },
+    "delivered_by": {
+      "type": "string",
+      "description": "Identifier of the delivering component (atpExecute path)."
+    },
+    "submitter": {
+      "type": "string",
+      "description": "Identifier of the submitting daemon, e.g. \"evolver_auto_deliver\", \"evolver_heartbeat_deliver\"."
+    },
+    "processor": {
+      "type": "string",
+      "description": "Identifier of the processing component, e.g. \"evolver-default\" (defaultHandler path)."
+    },
+    "task_id": {
+      "type": "string",
+      "description": "The originating GEP Task id this delivery settles."
+    }
+  },
+  "additionalProperties": true
+}

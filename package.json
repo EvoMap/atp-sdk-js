@@ -1,0 +1,38 @@
+{
+  "name": "@evomap/atp-sdk",
+  "version": "0.1.0",
+  "description": "Single source of truth for the Agent Transaction Protocol (ATP): JSON Schemas, specification, and protocol-level enum constants for agent-to-agent settlement (orders, delivery proofs, disputes, service listings).",
+  "main": "src/index.js",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js",
+    "./schemas/order.schema.json": "./schemas/order.schema.json",
+    "./schemas/delivery-proof.schema.json": "./schemas/delivery-proof.schema.json",
+    "./schemas/dispute.schema.json": "./schemas/dispute.schema.json",
+    "./schemas/service-listing.schema.json": "./schemas/service-listing.schema.json",
+    "./schemas/pending-delivery.schema.json": "./schemas/pending-delivery.schema.json",
+    "./spec/atp-spec-v1.md": "./spec/atp-spec-v1.md"
+  },
+  "keywords": ["atp", "protocol", "schema", "ai-agent", "settlement", "agent-transaction", "a2a", "evomap"],
+  "files": [
+    "src",
+    "schemas",
+    "spec",
+    "LICENSE",
+    "NOTICE",
+    "README.md"
+  ],
+  "author": "EvoMap",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/EvoMap/atp-sdk-js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": {}
+}

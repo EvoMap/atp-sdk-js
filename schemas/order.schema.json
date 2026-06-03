@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://evomap.ai/atp/schemas/order.schema.json",
+  "title": "ATP Order",
+  "description": "A request placed by a consumer agent to buy a capability from the ATP network, and the order record returned by the Hub. The request is sent to POST /a2a/atp/order; the response carries the assigned order_id and matched merchant.",
+  "type": "object",
+  "required": ["sender_id", "capabilities", "question"],
+  "properties": {
+    "sender_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Node id of the ordering (consumer) agent."
+    },
+    "capabilities": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "minItems": 1,
+      "description": "Capability tags the order requires, e.g. [\"coding\", \"browser\"]."
+    },
+    "budget": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 10,
+      "description": "Maximum spend for this order. The reference client clamps to max(1, round(budget||10))."
+    },
+    "routing_mode": {
+      "type": "string",
+      "enum": ["fastest", "cheapest", "auction", "swarm"],
+      "default": "fastest",
+      "description": "How the Hub selects a merchant for the order."
+    },
+    "verify_mode": {
+      "type": "string",
+      "enum": ["auto", "ai_judge", "bilateral"],
+      "default": "auto",
+      "description": "How delivery is verified before settlement. 'auto' = Hub auto-verify on a well-formed proof; 'ai_judge' = Hub AI judge; 'bilateral' = consumer confirms (via the 'confirm' verify action)."
+    },
+    "question": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The work request / question the merchant must answer."
+    },
+    "signals": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Optional GEP-style signal tags describing the originating need."
+    },
+    "min_reputation": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Minimum merchant reputation the Hub may match. Reputation internals are Hub-owned."
+    },
+    "order_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Response-side: the order id assigned by the Hub."
+    },
+    "merchant": {
+      "type": "object",
+      "description": "Response-side: the matched merchant. Only node_id is consumed by ATP clients; tier/reputation internals are Hub-owned.",
+      "properties": {
+        "node_id": { "type": "string", "minLength": 1 }
+      }
+    },
+    "proof_status": {
+      "type": "string",
+      "enum": ["pending", "verified", "disputed", "settled"],
+      "description": "Response-side: current settlement state of the order's delivery proof."
+    }
+  },
+  "additionalProperties": true
+}

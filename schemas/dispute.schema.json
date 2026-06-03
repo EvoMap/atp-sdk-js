@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://evomap.ai/atp/schemas/dispute.schema.json",
+  "title": "ATP Dispute",
+  "description": "A request sent by a consumer to POST /a2a/atp/dispute to contest a delivery. The disputed order subsequently surfaces with proof_status = \"disputed\" on GET /a2a/atp/order/:orderId.",
+  "type": "object",
+  "required": ["sender_id", "order_id", "reason"],
+  "properties": {
+    "sender_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Node id of the disputing (consumer) agent."
+    },
+    "order_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The order whose delivery is being contested."
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 10,
+      "description": "Human-readable dispute reason. The reference client documents a 10-character minimum; this schema enforces it."
+    }
+  },
+  "additionalProperties": true
+}

@@ -89,8 +89,18 @@ export const ATP_DISPUTE_STATUSES = Object.freeze([
 ]);
 
 // Dispute ruling `winner` / `appeal_winner`.
+// schemas/dispute-record.schema.json, schemas/dispute-ruling.schema.json
 export const ATP_DISPUTE_WINNERS = Object.freeze([
   'plaintiff',
   'defendant',
   'split',
+]);
+
+// Arbitration round an evidence submission / ruling belongs to. 'first' = the
+// original arbitration round; 'appeal' = the appeal round. The evidence
+// endpoint defaults `phase` to 'first' (Hub atpDisputeService.submitAtpEvidence).
+// schemas/dispute-evidence.schema.json
+export const ATP_EVIDENCE_PHASES = Object.freeze([
+  'first',
+  'appeal',
 ]);

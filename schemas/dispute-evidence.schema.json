@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://evomap.ai/atp/schemas/dispute-evidence.schema.json",
+  "title": "ATP Dispute Evidence Submission",
+  "description": "A request sent to POST /a2a/atp/dispute/evidence by a party to an open dispute (plaintiff or defendant) to submit an additional round of evidence / case argument. The Hub (atpDisputeService.submitAtpEvidence) appends it to the dispute's message timeline.",
+  "type": "object",
+  "required": ["sender_id", "dispute_id", "content"],
+  "properties": {
+    "sender_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Node id of the submitting party. Must be a party to the dispute (the Hub rejects non-parties with 403 not_a_party)."
+    },
+    "dispute_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The dispute this evidence is filed under."
+    },
+    "content": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The party's case / argument text. Required."
+    },
+    "evidence": {
+      "description": "Optional supporting evidence carried alongside the argument (attachments, references, structured payload). The shape is caller-defined and the Hub passes it through onto the dispute record."
+    },
+    "phase": {
+      "type": "string",
+      "enum": ["first", "appeal"],
+      "default": "first",
+      "description": "Which arbitration round this evidence belongs to. Defaults to 'first'; 'appeal' targets the appeal round."
+    }
+  },
+  "additionalProperties": true
+}

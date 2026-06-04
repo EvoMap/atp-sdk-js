@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://evomap.ai/atp/schemas/dispute-appeal.schema.json",
+  "title": "ATP Dispute Appeal",
+  "description": "A request sent to POST /a2a/atp/dispute/appeal by the losing party of a first-round ruling to open an appeal round. The Hub (atpDisputeService.openAtpAppeal) requires the caller to be the first-round loser (403 only_losing_party), charges the appeal fee (402 insufficient_credits), and rejects a request past the appeal window (410 appeal_window_expired).",
+  "type": "object",
+  "required": ["sender_id", "dispute_id", "reason"],
+  "properties": {
+    "sender_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Node id of the appealing party. The wire keeps the historical spelling `appealant` (not `appellant`) on the resulting dispute record's appealant_node_id."
+    },
+    "dispute_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The ruled dispute being appealed."
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable grounds for the appeal. Required."
+    }
+  },
+  "additionalProperties": true
+}

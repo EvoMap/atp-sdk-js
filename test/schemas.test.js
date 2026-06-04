@@ -104,7 +104,10 @@ test('the expected ATP schemas are present', () => {
     SCHEMA_FILES.slice().sort(),
     [
       'delivery-proof.schema.json',
+      'dispute-appeal.schema.json',
+      'dispute-evidence.schema.json',
       'dispute-record.schema.json',
+      'dispute-ruling.schema.json',
       'dispute.schema.json',
       'order.schema.json',
       'pending-delivery.schema.json',
@@ -216,6 +219,36 @@ test('dispute: valid request conforms; short reason rejected', () => {
     [],
   );
   assert.ok(validate(schema, { sender_id: 'n', order_id: 'ord_1', reason: 'bad' }).length > 0);
+});
+
+test('dispute-evidence: valid submission conforms; missing content + bad phase rejected', () => {
+  const schema = readSchema('dispute-evidence.schema.json');
+  assert.deepEqual(validate(schema, { sender_id: 'n', dispute_id: 'd1', content: 'here is my case' }), []);
+  // optional structured evidence + the appeal phase both conform
+  assert.deepEqual(validate(schema, { sender_id: 'n', dispute_id: 'd1', content: 'x', phase: 'appeal', evidence: { url: 'ipfs://cid' } }), []);
+  assert.ok(validate(schema, { sender_id: 'n', dispute_id: 'd1' }).some((e) => e.includes('content')));
+  assert.ok(validate(schema, { sender_id: 'n', dispute_id: 'd1', content: 'x', phase: 'second' }).length > 0);
+});
+
+test('dispute-ruling: valid ruling conforms; bad winner + out-of-range split + missing reason rejected', () => {
+  const schema = readSchema('dispute-ruling.schema.json');
+  assert.deepEqual(validate(schema, { sender_id: 'arb', dispute_id: 'd1', winner: 'plaintiff', reason: 'evidence favours the consumer' }), []);
+  assert.deepEqual(validate(schema, { sender_id: 'arb', dispute_id: 'd1', winner: 'split', split_ratio: 0.5, reason: 'shared fault', appeal: true }), []);
+  assert.ok(validate(schema, { sender_id: 'arb', dispute_id: 'd1', winner: 'nobody', reason: 'x' }).some((e) => e.includes('winner')));
+  assert.ok(validate(schema, { sender_id: 'arb', dispute_id: 'd1', winner: 'split', reason: 'x', split_ratio: 2 }).length > 0);
+  assert.ok(validate(schema, { sender_id: 'arb', dispute_id: 'd1', winner: 'plaintiff' }).some((e) => e.includes('reason')));
+});
+
+test('dispute-appeal: valid appeal conforms; missing reason rejected', () => {
+  const schema = readSchema('dispute-appeal.schema.json');
+  assert.deepEqual(validate(schema, { sender_id: 'n', dispute_id: 'd1', reason: 'the first ruling ignored my proof' }), []);
+  assert.ok(validate(schema, { sender_id: 'n', dispute_id: 'd1' }).some((e) => e.includes('reason')));
+});
+
+test('order: a fractional budget is accepted (type:number, not integer); sub-1 still rejected', () => {
+  const schema = readSchema('order.schema.json');
+  assert.deepEqual(validate(schema, { sender_id: 'n', budget: 2.5 }), []);
+  assert.ok(validate(schema, { sender_id: 'n', budget: 0.5 }).some((e) => e.includes('minimum')));
 });
 
 test('service-listing: valid listing conforms; price below 1 rejected', () => {

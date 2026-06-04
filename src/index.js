@@ -40,4 +40,5 @@ export {
   ATP_EXECUTION_MODES,
   ATP_DISPUTE_STATUSES,
   ATP_DISPUTE_WINNERS,
+  ATP_EVIDENCE_PHASES,
 } from './protocolConstants.js';

@@ -27,6 +27,7 @@ import {
   ATP_EXECUTION_MODES,
   ATP_DISPUTE_STATUSES,
   ATP_DISPUTE_WINNERS,
+  ATP_EVIDENCE_PHASES,
 } from '../src/index.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -68,6 +69,18 @@ test('ATP_DISPUTE_WINNERS matches dispute-record winner enum (sans null)', () =>
   assert.deepEqual([...ATP_DISPUTE_WINNERS, null], rec.properties.winner.enum);
 });
 
+test('ATP_DISPUTE_WINNERS matches the dispute-ruling request winner enum', () => {
+  const ruling = readSchema('dispute-ruling.schema.json');
+  // the ruling request takes a concrete winner (no nullable here)
+  assert.deepEqual(ATP_DISPUTE_WINNERS, ruling.properties.winner.enum);
+});
+
+test('ATP_EVIDENCE_PHASES matches dispute-evidence phase enum', () => {
+  const ev = readSchema('dispute-evidence.schema.json');
+  assert.deepEqual(ATP_EVIDENCE_PHASES, ev.properties.phase.enum);
+  assert.deepEqual(ATP_EVIDENCE_PHASES, ['first', 'appeal']);
+});
+
 test('ATP_EXECUTION_MODES matches service-listing execution_mode enum', () => {
   const listing = readSchema('service-listing.schema.json');
   assert.deepEqual(ATP_EXECUTION_MODES, listing.properties.execution_mode.enum);
@@ -94,6 +107,7 @@ test('all ATP enum constants are frozen', () => {
     ATP_EXECUTION_MODES,
     ATP_DISPUTE_STATUSES,
     ATP_DISPUTE_WINNERS,
+    ATP_EVIDENCE_PHASES,
   ]) {
     assert.ok(Object.isFrozen(arr));
   }

@@ -90,7 +90,12 @@ schemas in `./schemas/`.
 | POST | `/a2a/atp/deliver` | Submit a delivery proof | `delivery-proof.schema.json` (the `proof_payload`) |
 | POST | `/a2a/atp/verify` | Confirm delivery or trigger AI judge | request `{ sender_id, order_id, action }`, `action` ∈ `confirm \| ai_judge` |
 | POST | `/a2a/atp/settle` | Force settlement | request `{ sender_id, order_id }` |
-| POST | `/a2a/atp/dispute` | Contest a delivery | `dispute.schema.json` |
+| POST | `/a2a/atp/dispute` | Contest a delivery (raise) | `dispute.schema.json` (request) |
+| POST | `/a2a/atp/dispute/open` | Open an arbitration-enabled dispute | `dispute.schema.json` (request) |
+| POST | `/a2a/atp/dispute/evidence` | Submit an evidence round | `dispute-evidence.schema.json` |
+| POST | `/a2a/atp/dispute/rule` | Arbitrator submits a ruling (first or appeal round) | `dispute-ruling.schema.json` |
+| POST | `/a2a/atp/dispute/appeal` | Losing party opens an appeal | `dispute-appeal.schema.json` |
+| GET | `/a2a/atp/dispute/:id` | Dispute record / evidence + ruling timeline | `dispute-record.schema.json` (response) |
 | GET | `/a2a/atp/merchant/tier` | Query merchant tier/reputation | response Hub-owned (opaque to ATP clients) |
 | GET | `/a2a/atp/order/:orderId` | Order status | response carries `proof_status` |
 | GET | `/a2a/atp/proofs` | List proofs | query `node_id, role, status, limit`; `role` ∈ `merchant \| consumer`, `status` ∈ proof_status values |
@@ -123,7 +128,8 @@ field: `auto | ai_judge | bilateral`) and the verify-endpoint `action`
 | `ATP_ROLES` | `merchant, consumer` | proofs filter |
 | `ATP_EXECUTION_MODES` | `exclusive, open, swarm` | service listing |
 | `ATP_DISPUTE_STATUSES` | `evidence, arbitrating, ruled, appealed, appeal_arbitrating, appeal_ruled, executed` | dispute record |
-| `ATP_DISPUTE_WINNERS` | `plaintiff, defendant, split` | dispute record ruling |
+| `ATP_DISPUTE_WINNERS` | `plaintiff, defendant, split` | dispute record + ruling request |
+| `ATP_EVIDENCE_PHASES` | `first, appeal` | dispute evidence submission |
 
 ### Delivery proof: one shape, four builders
 

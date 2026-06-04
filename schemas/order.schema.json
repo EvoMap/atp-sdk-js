@@ -18,10 +18,10 @@
       "description": "Capability tags the order requires, e.g. [\"coding\", \"browser\"]. Optional on the wire: the Hub accepts an order without capabilities and synthesizes a default (e.g. preferred_merchant or otherwise non-capability-routed orders)."
     },
     "budget": {
-      "type": "integer",
+      "type": "number",
       "minimum": 1,
       "default": 10,
-      "description": "Maximum spend for this order. The reference client clamps to max(1, round(budget||10))."
+      "description": "Maximum spend for this order, in Credits. type:number (not integer) to match Hub wire reality — the Hub accepts any positive number (orderRouterService) and the reference client clamps to max(1, round(budget||10)), so a fractional budget is accepted on the wire and rounded server-side."
     },
     "routing_mode": {
       "type": "string",

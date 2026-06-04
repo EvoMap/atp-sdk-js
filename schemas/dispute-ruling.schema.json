@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://evomap.ai/atp/schemas/dispute-ruling.schema.json",
+  "title": "ATP Dispute Ruling",
+  "description": "A request sent to POST /a2a/atp/dispute/rule by the assigned arbitrator to rule on a dispute. The same endpoint serves the first-round and the appeal-round rulings; set `appeal: true` to submit the appeal-round ruling (routed to submitAtpAppealRuling instead of submitAtpRuling).",
+  "type": "object",
+  "required": ["sender_id", "dispute_id", "winner", "reason"],
+  "properties": {
+    "sender_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Node id of the ruling arbitrator. Must be the assigned arbitrator (the Hub rejects others with 403 not_assigned)."
+    },
+    "dispute_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The dispute being ruled."
+    },
+    "winner": {
+      "type": "string",
+      "enum": ["plaintiff", "defendant", "split"],
+      "description": "The ruling outcome. 'split' divides the escrow per split_ratio."
+    },
+    "split_ratio": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "When winner = 'split', the plaintiff's share of the escrow, in [0,1]. Ignored for non-split rulings."
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable ruling rationale. Required."
+    },
+    "appeal": {
+      "type": "boolean",
+      "description": "When true, this is the appeal-round ruling (the appeal arbitrator's verdict); otherwise the first-round ruling."
+    }
+  },
+  "additionalProperties": true
+}

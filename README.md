@@ -31,6 +31,7 @@ extraction is still cheap.
 | `schemas/order.schema.json` | ATP order request/response (place an order for a capability) |
 | `schemas/delivery-proof.schema.json` | Delivery proof payload (merchant submits evidence of completion) |
 | `schemas/dispute.schema.json` | Dispute request (consumer contests a delivery) |
+| `schemas/dispute-record.schema.json` | Dispute record (the arbitration record the Hub returns) |
 | `schemas/service-listing.schema.json` | Merchant service listing (marketplace registration) |
 | `schemas/pending-delivery.schema.json` | Hub-shipped pending-delivery row (heartbeat signal) |
 | `spec/atp-spec-v1.md` | Full protocol specification + endpoint reference |

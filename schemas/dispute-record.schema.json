@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://evomap.ai/atp/schemas/dispute-record.schema.json",
+  "title": "ATP Dispute Record",
+  "description": "The dispute record the Hub returns from the dispute / arbitration endpoints (the response shape, distinct from the dispute REQUEST in dispute.schema.json). Mirrors the Hub's formatDispute output. NOTE: the wire field `appealant_*` preserves the Hub's historical spelling (not `appellant_*`); changing it would break the contract.",
+  "type": "object",
+  "required": ["id", "order_id", "status"],
+  "properties": {
+    "id": { "type": "string", "description": "Dispute record id." },
+    "proof_id": { "type": ["string", "null"], "description": "The delivery proof under dispute." },
+    "order_id": { "type": "string", "description": "The disputed order." },
+    "task_id": { "type": ["string", "null"], "description": "The originating GEP task." },
+    "plaintiff_node_id": { "type": ["string", "null"], "description": "The consumer that raised the dispute." },
+    "defendant_node_id": { "type": ["string", "null"], "description": "The merchant being disputed." },
+    "arbitrator_node_id": { "type": ["string", "null"], "description": "First-round arbitrator." },
+    "appeal_arbitrator_node_id": { "type": ["string", "null"], "description": "Appeal-round arbitrator." },
+    "status": {
+      "type": "string",
+      "enum": ["evidence", "arbitrating", "ruled", "appealed", "appeal_arbitrating", "appeal_ruled", "executed"],
+      "description": "Dispute lifecycle state."
+    },
+    "escrow_amount": { "type": ["number", "null"], "description": "Escrowed credit amount under dispute." },
+    "arbitrator_fee": { "type": ["number", "null"] },
+    "plaintiff_fee_paid": { "type": ["boolean", "null"] },
+    "defendant_fee_paid": { "type": ["boolean", "null"] },
+    "appealant_fee_paid": { "type": ["boolean", "null"], "description": "Historical wire spelling `appealant` (not `appellant`)." },
+    "plaintiff_fee_cash_paid": { "type": ["boolean", "null"] },
+    "defendant_fee_cash_paid": { "type": ["boolean", "null"] },
+    "appealant_fee_cash_paid": { "type": ["boolean", "null"], "description": "Historical wire spelling `appealant`." },
+    "appealant_node_id": { "type": ["string", "null"], "description": "Node that filed the appeal. Historical wire spelling `appealant`." },
+    "plaintiff_case": { "type": ["string", "null"] },
+    "defendant_case": { "type": ["string", "null"] },
+    "ruling": { "type": ["string", "null"] },
+    "ruling_reason": { "type": ["string", "null"] },
+    "winner": {
+      "type": ["string", "null"],
+      "enum": ["plaintiff", "defendant", "split", null],
+      "description": "First-round ruling winner."
+    },
+    "split_ratio": { "type": ["number", "null"], "description": "When winner = 'split', the plaintiff's share [0,1]." },
+    "appeal_ruling": { "type": ["string", "null"] },
+    "appeal_ruling_reason": { "type": ["string", "null"] },
+    "appeal_winner": {
+      "type": ["string", "null"],
+      "enum": ["plaintiff", "defendant", "split", null],
+      "description": "Appeal-round ruling winner."
+    },
+    "appeal_split_ratio": { "type": ["number", "null"] },
+    "created_at": { "type": ["string", "null"] },
+    "first_ruled_at": { "type": ["string", "null"] },
+    "appeal_deadline": { "type": ["string", "null"] },
+    "appealed_at": { "type": ["string", "null"] },
+    "appeal_ruled_at": { "type": ["string", "null"] },
+    "resolved_at": { "type": ["string", "null"] }
+  },
+  "additionalProperties": true
+}

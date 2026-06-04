@@ -38,4 +38,6 @@ export {
   ATP_PROOF_STATUSES,
   ATP_ROLES,
   ATP_EXECUTION_MODES,
+  ATP_DISPUTE_STATUSES,
+  ATP_DISPUTE_WINNERS,
 } from './protocolConstants.js';

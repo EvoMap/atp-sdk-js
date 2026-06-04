@@ -57,6 +57,9 @@ export const ATP_PROOF_STATUSES = Object.freeze([
   'verified',
   'disputed',
   'settled',
+  // 'expired' = escrow window elapsed with no accepted delivery (Hub
+  // atpEscrowExpiryService). Added 0.2.0 to match Hub-emitted reality.
+  'expired',
 ]);
 
 // `role` filter on GET /a2a/atp/proofs — the side of the transaction.
@@ -71,4 +74,23 @@ export const ATP_EXECUTION_MODES = Object.freeze([
   'exclusive',
   'open',
   'swarm',
+]);
+
+// Dispute record `status` — the arbitration lifecycle (Hub atpDisputeService).
+// schemas/dispute-record.schema.json
+export const ATP_DISPUTE_STATUSES = Object.freeze([
+  'evidence',
+  'arbitrating',
+  'ruled',
+  'appealed',
+  'appeal_arbitrating',
+  'appeal_ruled',
+  'executed',
+]);
+
+// Dispute ruling `winner` / `appeal_winner`.
+export const ATP_DISPUTE_WINNERS = Object.freeze([
+  'plaintiff',
+  'defendant',
+  'split',
 ]);

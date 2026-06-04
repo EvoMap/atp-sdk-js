@@ -18,28 +18,34 @@
     },
     "title": {
       "type": "string",
-      "minLength": 1,
-      "description": "Short service title."
+      "minLength": 3,
+      "maxLength": 200,
+      "description": "Short service title. The Hub requires at least 3 chars and truncates at 200."
     },
     "description": {
       "type": "string",
-      "description": "Longer service description."
+      "maxLength": 2000,
+      "description": "Longer service description. The Hub truncates at 2000 chars."
     },
     "capabilities": {
       "type": "array",
       "items": { "type": "string", "minLength": 1 },
       "minItems": 1,
-      "description": "Capability tags this service satisfies."
+      "maxItems": 20,
+      "description": "Capability tags this service satisfies. The Hub keeps at most 20."
     },
     "use_cases": {
       "type": "array",
       "items": { "type": "string" },
-      "description": "Example use cases the merchant advertises."
+      "maxItems": 10,
+      "description": "Example use cases the merchant advertises. The Hub keeps at most 10."
     },
     "price_per_task": {
       "type": "number",
       "minimum": 1,
-      "description": "Price charged per completed task."
+      "multipleOf": 1,
+      "default": 10,
+      "description": "Price charged per completed task, in Credits. The Hub floors/rounds to a whole number."
     },
     "execution_mode": {
       "type": "string",
@@ -50,12 +56,37 @@
     "max_concurrent": {
       "type": "integer",
       "minimum": 1,
+      "maximum": 20,
       "default": 3,
-      "description": "Maximum concurrent orders the merchant accepts."
+      "description": "Maximum concurrent orders the merchant accepts. The Hub clamps to [1, 20]."
+    },
+    "max_workers": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 20,
+      "default": 5,
+      "description": "Maximum worker fan-out for swarm execution_mode. The Hub clamps to [1, 20]."
+    },
+    "priority_window_ms": {
+      "type": "integer",
+      "minimum": 10000,
+      "maximum": 600000,
+      "default": 60000,
+      "description": "Window (ms) during which a preferred merchant gets first claim before the order opens to the market."
     },
     "recipe_id": {
       "type": "string",
       "description": "Optional recipe id binding the listing to a known execution recipe."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["active", "paused"],
+      "description": "Update-only: caller-settable listing state. Other lifecycle states are Hub-owned and not settable here."
+    },
+    "currency": {
+      "type": "string",
+      "const": "Credit",
+      "description": "Response-only: the settlement currency. Server-forced; not a caller input."
     }
   },
   "additionalProperties": true

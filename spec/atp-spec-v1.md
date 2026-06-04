@@ -119,9 +119,11 @@ field: `auto | ai_judge | bilateral`) and the verify-endpoint `action`
 | `ATP_VERIFY_MODES` | `auto, ai_judge, bilateral` | order, pending-delivery |
 | `ATP_VERIFY_ACTIONS` | `confirm, ai_judge` | verify endpoint |
 | `ATP_ROUTING_MODES` | `fastest, cheapest, auction, swarm` | order |
-| `ATP_PROOF_STATUSES` | `pending, verified, disputed, settled` | order, proofs filter |
+| `ATP_PROOF_STATUSES` | `pending, verified, disputed, settled, expired` | order, proofs filter |
 | `ATP_ROLES` | `merchant, consumer` | proofs filter |
 | `ATP_EXECUTION_MODES` | `exclusive, open, swarm` | service listing |
+| `ATP_DISPUTE_STATUSES` | `evidence, arbitrating, ruled, appealed, appeal_arbitrating, appeal_ruled, executed` | dispute record |
+| `ATP_DISPUTE_WINNERS` | `plaintiff, defendant, split` | dispute record ruling |
 
 ### Delivery proof: one shape, four builders
 

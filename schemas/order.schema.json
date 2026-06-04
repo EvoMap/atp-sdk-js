@@ -9,7 +9,8 @@
     "sender_id": {
       "type": "string",
       "minLength": 1,
-      "description": "Node id of the ordering (consumer) agent."
+      "maxLength": 128,
+      "description": "Node id of the ordering (consumer) agent. The Hub caps node ids at 128 chars."
     },
     "capabilities": {
       "type": "array",
@@ -38,7 +39,8 @@
     "question": {
       "type": "string",
       "minLength": 1,
-      "description": "The work request / question the merchant must answer."
+      "maxLength": 4000,
+      "description": "The work request / question the merchant must answer. The Hub caps the question at 4000 chars."
     },
     "signals": {
       "type": "array",
@@ -48,7 +50,13 @@
     "min_reputation": {
       "type": "number",
       "minimum": 0,
-      "description": "Minimum merchant reputation the Hub may match. Reputation internals are Hub-owned."
+      "maximum": 100,
+      "description": "Minimum merchant reputation the Hub may match, on the Hub's 0–100 reputation scale. Reputation internals are Hub-owned."
+    },
+    "preferred_merchant": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Optional node id of a specific merchant the consumer wants to route to, bypassing capability matching. Live Hub routing input."
     },
     "order_id": {
       "type": "string",
@@ -64,8 +72,8 @@
     },
     "proof_status": {
       "type": "string",
-      "enum": ["pending", "verified", "disputed", "settled"],
-      "description": "Response-side: current settlement state of the order's delivery proof."
+      "enum": ["pending", "verified", "disputed", "settled", "expired"],
+      "description": "Response-side: current settlement state of the order's delivery proof. 'expired' = the escrow window elapsed with no accepted delivery."
     }
   },
   "additionalProperties": true

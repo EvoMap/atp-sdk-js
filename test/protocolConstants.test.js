@@ -25,6 +25,8 @@ import {
   ATP_PROOF_STATUSES,
   ATP_ROLES,
   ATP_EXECUTION_MODES,
+  ATP_DISPUTE_STATUSES,
+  ATP_DISPUTE_WINNERS,
 } from '../src/index.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -52,6 +54,18 @@ test('ATP_PROOF_STATUSES matches order schema proof_status enum', () => {
   const order = readSchema('order.schema.json');
   assert.deepEqual(ATP_PROOF_STATUSES, order.properties.proof_status.enum);
   assert.ok(!ATP_PROOF_STATUSES.includes('failed'));
+  assert.ok(ATP_PROOF_STATUSES.includes('expired'));
+});
+
+test('ATP_DISPUTE_STATUSES matches dispute-record schema status enum', () => {
+  const rec = readSchema('dispute-record.schema.json');
+  assert.deepEqual(ATP_DISPUTE_STATUSES, rec.properties.status.enum);
+});
+
+test('ATP_DISPUTE_WINNERS matches dispute-record winner enum (sans null)', () => {
+  const rec = readSchema('dispute-record.schema.json');
+  // the schema enum carries a trailing null (winner is nullable until ruled)
+  assert.deepEqual([...ATP_DISPUTE_WINNERS, null], rec.properties.winner.enum);
 });
 
 test('ATP_EXECUTION_MODES matches service-listing execution_mode enum', () => {
@@ -78,6 +92,8 @@ test('all ATP enum constants are frozen', () => {
     ATP_PROOF_STATUSES,
     ATP_ROLES,
     ATP_EXECUTION_MODES,
+    ATP_DISPUTE_STATUSES,
+    ATP_DISPUTE_WINNERS,
   ]) {
     assert.ok(Object.isFrozen(arr));
   }

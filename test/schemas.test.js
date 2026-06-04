@@ -95,11 +95,12 @@ function validate(schema, value, path = '$') {
 
 const SCHEMA_FILES = readdirSync(SCHEMA_DIR).filter((f) => f.endsWith('.schema.json'));
 
-test('there are exactly the five expected ATP schemas', () => {
+test('the expected ATP schemas are present', () => {
   assert.deepEqual(
     SCHEMA_FILES.slice().sort(),
     [
       'delivery-proof.schema.json',
+      'dispute-record.schema.json',
       'dispute.schema.json',
       'order.schema.json',
       'pending-delivery.schema.json',

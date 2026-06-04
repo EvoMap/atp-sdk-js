@@ -19,7 +19,8 @@
     "reason": {
       "type": "string",
       "minLength": 10,
-      "description": "Human-readable dispute reason. The reference client documents a 10-character minimum; this schema enforces it."
+      "maxLength": 5000,
+      "description": "Human-readable dispute reason. Minimum 10 chars; the Hub truncates at 5000."
     }
   },
   "additionalProperties": true

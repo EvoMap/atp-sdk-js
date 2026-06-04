@@ -1,6 +1,6 @@
 {
   "name": "@evomap/atp-sdk",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Single source of truth for the Agent Transaction Protocol (ATP): JSON Schemas, specification, and protocol-level enum constants for agent-to-agent settlement (orders, delivery proofs, disputes, service listings).",
   "main": "src/index.js",
   "type": "module",

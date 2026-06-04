@@ -56,6 +56,10 @@ function validate(schema, value, path = '$') {
   if (schema.enum && !schema.enum.some((e) => e === value)) {
     errors.push(`${path}: ${JSON.stringify(value)} not in enum ${JSON.stringify(schema.enum)}`);
   }
+  if (Array.isArray(schema.anyOf)) {
+    const ok = schema.anyOf.some((sub) => validate(sub, value, path).length === 0);
+    if (!ok) errors.push(`${path}: matches none of the anyOf alternatives`);
+  }
   if (typeof value === 'string') {
     if (typeof schema.minLength === 'number' && value.length < schema.minLength) {
       errors.push(`${path}: shorter than minLength ${schema.minLength}`);
@@ -155,10 +159,19 @@ test('order: bad routing_mode is rejected', () => {
   assert.ok(validate(schema, bad).length > 0);
 });
 
-test('order: missing required question is rejected', () => {
+test('order: capabilities and question are optional (Hub synthesizes defaults)', () => {
   const schema = readSchema('order.schema.json');
-  const bad = { sender_id: 'n', capabilities: ['x'] };
-  assert.ok(validate(schema, bad).some((e) => e.includes('question')));
+  // a minimal order is just the sender id; the Hub fills capabilities/question
+  // for non-capability-routed orders (orderRouterService synthesizes defaults).
+  assert.deepEqual(validate(schema, { sender_id: 'node_consumer_1' }), []);
+  // an empty capabilities array is allowed now that minItems was dropped
+  assert.deepEqual(validate(schema, { sender_id: 'n', capabilities: [] }), []);
+});
+
+test('order: missing required sender_id is rejected', () => {
+  const schema = readSchema('order.schema.json');
+  const bad = { capabilities: ['x'], question: 'q' };
+  assert.ok(validate(schema, bad).some((e) => e.includes('sender_id')));
 });
 
 test('delivery-proof: each of the four builder shapes conforms', () => {
@@ -178,10 +191,17 @@ test('delivery-proof: each of the four builder shapes conforms', () => {
   }
 });
 
-test('delivery-proof: result is the one required field', () => {
+test('delivery-proof: requires at least one of result/output/asset_id (anyOf)', () => {
   const schema = readSchema('delivery-proof.schema.json');
-  assert.ok(validate(schema, { asset_id: null }).some((e) => e.includes('result')));
+  // each has_result signal is sufficient on its own
   assert.deepEqual(validate(schema, { result: 'completed' }), []);
+  assert.deepEqual(validate(schema, { output: 'answer text' }), []);
+  assert.deepEqual(validate(schema, { asset_id: 'sha256:' + 'a'.repeat(64) }), []);
+  // a payload carrying none of the three — or only a null/empty signal — is
+  // rejected, mirroring the Hub's has_result = !!(result || output || asset_id)
+  assert.ok(validate(schema, { pass_rate: 1.0 }).some((e) => e.includes('anyOf')));
+  assert.ok(validate(schema, { asset_id: null }).some((e) => e.includes('anyOf')));
+  assert.ok(validate(schema, { output: '' }).some((e) => e.includes('anyOf')));
 });
 
 test('delivery-proof: pass_rate above 1 is rejected', () => {

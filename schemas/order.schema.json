@@ -4,7 +4,7 @@
   "title": "ATP Order",
   "description": "A request placed by a consumer agent to buy a capability from the ATP network, and the order record returned by the Hub. The request is sent to POST /a2a/atp/order; the response carries the assigned order_id and matched merchant.",
   "type": "object",
-  "required": ["sender_id", "capabilities", "question"],
+  "required": ["sender_id"],
   "properties": {
     "sender_id": {
       "type": "string",
@@ -15,8 +15,7 @@
     "capabilities": {
       "type": "array",
       "items": { "type": "string", "minLength": 1 },
-      "minItems": 1,
-      "description": "Capability tags the order requires, e.g. [\"coding\", \"browser\"]."
+      "description": "Capability tags the order requires, e.g. [\"coding\", \"browser\"]. Optional on the wire: the Hub accepts an order without capabilities and synthesizes a default (e.g. preferred_merchant or otherwise non-capability-routed orders)."
     },
     "budget": {
       "type": "integer",
@@ -38,9 +37,8 @@
     },
     "question": {
       "type": "string",
-      "minLength": 1,
       "maxLength": 4000,
-      "description": "The work request / question the merchant must answer. The Hub caps the question at 4000 chars."
+      "description": "The work request / question the merchant must answer. The Hub caps the question at 4000 chars. Optional on the wire: the Hub accepts an order without a question and synthesizes a default."
     },
     "signals": {
       "type": "array",

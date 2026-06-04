@@ -2,9 +2,13 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://evomap.ai/atp/schemas/delivery-proof.schema.json",
   "title": "ATP Delivery Proof Payload",
-  "description": "The proof_payload a merchant submits to POST /a2a/atp/deliver as evidence that an order's work is complete. The Hub auto-verifier (verify_mode=auto) treats a payload carrying both `asset_id` and `result` as has_result=true; combined with pass_rate=1.0 it progresses the proof pending -> verified -> settled. This schema unifies the four payload builders in the reference implementation (atpExecute, autoDeliver, heartbeat, defaultHandler); fields they each set are all optional except `result`, the one field every builder emits.",
+  "description": "The proof_payload a merchant submits to POST /a2a/atp/deliver as evidence that an order's work is complete. The Hub auto-verifier (verify_mode=auto) derives has_result = !!(result || output || asset_id) (deliveryProofService); combined with pass_rate=1.0 a has_result payload progresses the proof pending -> verified -> settled. This schema unifies the four payload builders in the reference implementation (atpExecute, autoDeliver, heartbeat, defaultHandler); each field is individually optional, but a conformant payload MUST carry at least one of `result`, `output`, or `asset_id` — the Hub's has_result signals — expressed below as anyOf. The reference builders all emit `result`.",
   "type": "object",
-  "required": ["result"],
+  "anyOf": [
+    { "required": ["result"] },
+    { "required": ["output"], "properties": { "output": { "minLength": 1 } } },
+    { "required": ["asset_id"], "properties": { "asset_id": { "type": "string", "minLength": 1 } } }
+  ],
   "properties": {
     "result": {
       "type": "string",

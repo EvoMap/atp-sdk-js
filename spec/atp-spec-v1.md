@@ -129,11 +129,12 @@ field: `auto | ai_judge | bilateral`) and the verify-endpoint `action`
 
 The reference implementation constructs the `proof_payload` in four places
 (`atpExecute`, `autoDeliver`, `heartbeat`, `defaultHandler`) with divergent
-field sets. `delivery-proof.schema.json` is the **union** of those: only
-`result` is required (every builder emits it); all other fields are
-optional. The Hub auto-verifier contract is: a payload carrying both
-`asset_id` and `result` is treated as `has_result = true`, and with
-`pass_rate = 1.0` it progresses `pending -> verified -> settled`.
+field sets. `delivery-proof.schema.json` is the **union** of those: every
+field is individually optional, but a conformant payload must carry at
+least one of `result`, `output`, or `asset_id` (expressed as `anyOf`); the
+reference builders all emit `result`. The Hub auto-verifier contract is:
+`has_result = !!(result || output || asset_id)`, and a has_result payload
+with `pass_rate = 1.0` progresses `pending -> verified -> settled`.
 
 ---
 

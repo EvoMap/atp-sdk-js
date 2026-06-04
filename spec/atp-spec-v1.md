@@ -151,32 +151,42 @@ ATP and GEP touch at exactly two seams:
 Everything else is GEP-owned and reused unchanged: Gene, Capsule, Task base
 shapes, and `computeAssetId` / `canonicalize` content-addressing.
 
-### 4.1 Known divergence — "GEP-shaped but not GEP-valid"
+### 4.1 GEP-validity of the delivered bundle
 
 The reference implementation's hand-rolled Gene+Capsule bundle (in
-`atpExecute`) does **not** currently validate against `@evomap/gep-sdk`'s
-strict schemas. This is documented here so the divergence is tracked rather
-than silently shipped; reconciling it is a follow-up for whoever wires ATP
-to a strict GEP validator:
+`atpExecute`) historically diverged from `@evomap/gep-sdk`'s strict schemas
+on four points. Three are now reconciled; one is intentionally deferred for
+a security reason documented below.
 
-1. **`schema_version`** is set to `"1.0"`, but gep-sdk requires the pattern
-   `^\d+\.\d+\.\d+$` (i.e. `"1.0.0"`).
-2. The synthesized **Gene omits `constraints`** (`max_files`,
-   `forbidden_paths`), which gep-sdk's Gene schema requires.
-3. The Capsule sets **`source_type: "atp_task_executor"`**, which is not in
-   gep-sdk's `source_type` enum (`generated | reused | reference |
-   user_authored | null`), and adds the non-schema **`atp`** key — both
-   rejected by the Capsule schema's `additionalProperties: false`.
-4. The Capsule's **`content` is a string** (the answer text), but gep-sdk
-   types `content` as `object | null`.
+**Resolved** (evolver, the reference implementation):
 
-These mismatches have not surfaced because the ATP publish path is
-hand-rolled and skips gep-sdk's (warn-only) validation. Reconciliation
-options: (a) bring the bundle into GEP compliance; or (b) formally declare
-ATP capsules a distinct profile. Either way, the `capsule.atp` extension
-needs a home — gep-sdk's Capsule schema already exposes an open
-`a2a: { type: object }` field that an ATP extension could nest under
-without a `additionalProperties` change.
+1. ~~`schema_version` was `"1.0"`~~ → now `"1.0.0"` (matches gep-sdk's
+   `^\d+\.\d+\.\d+$`).
+2. ~~Gene omitted the required `constraints`~~ → now emits
+   `constraints: { max_files: 0, forbidden_paths: [] }` (an ATP answer
+   edits no files).
+3. ~~Capsule `source_type` was the non-enum `"atp_task_executor"` and the
+   ATP block sat at a non-schema top-level `atp` key~~ → `source_type` is
+   now `"generated"`, and the ATP provenance moved under **`capsule.a2a.atp`**.
+   `a2a` is an open object in gep-sdk's Capsule schema (so the bundle is
+   GEP-valid) **and** is allow-listed by the Hub's payload sanitizer —
+   which the top-level `atp` key was **not**, so it had been silently
+   stripped on every publish and the order/task association never reached
+   the Hub. Nesting under `a2a` fixes both the schema validity and the
+   data loss.
+
+**Deferred — `content` typing (blocked on a Hub-side prerequisite):**
+
+4. The Capsule's `content` is a **string** (the answer text), but gep-sdk
+   types `content` as `object | null`. This is **deliberately left as-is**:
+   the EvoMap Hub's PII scanner (`piiScannerService`) is string-guarded and
+   runs on the publish path, redacting secrets from string `content` before
+   storage. Boxing `content` into an object would make the scanner skip it
+   (`typeof value !== "string"` → continue), so ATP answer text would bypass
+   PII redaction — a security regression. Reconciling this point requires
+   the Hub PII scanner to first recurse into nested-object strings; until
+   then, ATP capsules carry a string `content` as a documented, deliberate
+   profile difference rather than a latent bug.
 
 ---
 
@@ -205,7 +215,11 @@ no fields to v1.
 
 ## 6. Stability
 
-ATP is pre-1.0 (`@beta`): one implementation today (evolver). The shapes
-here are extracted verbatim from that implementation. They harden to
-`@stable` once a second runtime (evox Rust) consumes them and the §4 seams
-and §4.1 divergences are resolved.
+ATP is pre-1.0 (`@beta`). The shapes here were extracted verbatim from the
+reference implementation (evolver). A second runtime (the evox Rust
+`evox-atp-api` crate) now vendors these schemas as a drift-checked
+substrate, and three of the four §4.1 GEP-validity divergences are
+reconciled; the remaining one (`content` typing) is a documented, deliberate
+profile difference pending a Hub-side PII-scanner change. They harden to
+`@stable` once the §4 seams settle and a real consumer (a typed coordbus
+settlement op) exercises the contract end-to-end.
